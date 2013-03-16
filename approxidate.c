@@ -900,15 +900,15 @@ static int approxidate_str(const char *date,
 int approxidate(const char *date, struct timeval *tv)
 {
 	int offset;
-	
+
 	if (!parse_date_basic(date, tv, &offset)) {
 		return 0;
 	}
 
 	gettimeofday(tv, NULL);
-	if (!approxidate_str(date, tv)) {
+	if ((tv->tv_sec = approxidate_str(date, tv)) >= 0) {
 		return 0;
 	}
-	
+
 	return -1;
 }

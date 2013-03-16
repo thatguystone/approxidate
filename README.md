@@ -6,6 +6,8 @@ Taken from Linus' original code in `/git/date.c`, approxidate gives you a dead-s
 
 There's only one function: `int approxidate(const char *date, struct timeval *t)`.  It returns 0 when it parsed the date, -1 when it couldn't.
 
+When compiling, be sure to link in the math library (-lm), and you're good.
+
 ```c
 #include <approxidate.h>
 
