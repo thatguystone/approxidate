@@ -17,3 +17,17 @@ approxidate("10/Mar/2013:12:43:02 -0500", &t);
 ```
 
 For more, see [test.c](test.c).
+
+## Speed
+
+From test.c:
+
+```bash
+$ make
+
+rm -f test
+gcc -g -Wall -O2 -std=gnu99 test.c approxidate.c -lm -o test
+
+approxidate time: 0.363872
+strptime time: 0.622350
+```
