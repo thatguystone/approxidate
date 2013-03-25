@@ -1,11 +1,6 @@
 #ifndef APPROXIDATE_H
 #define APPROXIDATE_H
 
-#include <math.h>
-#include <string.h>
-#include <time.h>
-#include <limits.h>
-#include <stdlib.h>
 #include <sys/time.h>
 
 /**

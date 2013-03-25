@@ -6,6 +6,12 @@
 
 #include "approxidate.h"
 
+#include <math.h>
+#include <string.h>
+#include <time.h>
+#include <limits.h>
+#include <stdlib.h>
+
 /**
  * Maintains compatibility with the default struct tm,
  * but adds a field for usec.
