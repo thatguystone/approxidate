@@ -296,7 +296,7 @@ static int match_multi_number(unsigned long num, char c, const char *date, char 
 	
 	num2 = strtol(end+1, &end, 10);
 	num3 = -1;
-	num4 = -1;
+	num4 = 0;
 	if (*end == c && isdigit(end[1])) {
 		num3 = strtol(end+1, &end, 10);
 
