@@ -1,0 +1,5 @@
+approxidate.*
+pyapproxidate.c
+build/
+dist/
+MANIFEST

@@ -1,0 +1,10 @@
+===========
+approxidate
+===========
+
+approxidate is a quick way to get a unix timestamp from a ton of arbitrary date formats.
+
+Typical usage::
+
+	import approxidate
+	approxidate.approx("10/10/2013 10:10:10.312 +0500")

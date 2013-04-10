@@ -1,0 +1,4 @@
+include approxidate.*
+include pyapproxidate.*
+include capproxidate.*
+include setup.py
