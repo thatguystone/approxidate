@@ -884,6 +884,7 @@ static int approxidate_str(const char *date, struct timeval *tv)
 	tm.tm_year = -1;
 	tm.tm_mon = -1;
 	tm.tm_mday = -1;
+	tm.tm_usec = tv->tv_usec;
 
 	for (;;) {
 		unsigned char c = *date;

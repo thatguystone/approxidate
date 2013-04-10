@@ -44,6 +44,15 @@ int main() {
 	assert_equal(tv.tv_sec, 1331355607);
 	assert_equal(tv.tv_usec, 657891);
 
+	gettimeofday(&tv, NULL);
+	long usec = tv.tv_usec;
+	approxidate("10/Mar/2012", &tv);
+
+	if (!((usec - 10000) < tv.tv_usec && (usec + 10000) > tv.tv_usec)) {
+		fprintf(stderr, "Error: usec calculation for anonymous time is off\n"); \
+		errors++;
+	}
+
 	approxidate("00:00:07.657891", &tv);
 	assert_equal(tv.tv_usec, 657891);
 
