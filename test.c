@@ -1,65 +1,64 @@
-#define _XOPEN_SOURCE
-#define _GNU_SOURCE 500
 #include <stdio.h>
-#include <time.h>
+#include <assert.h>
 
 #include "approxidate.h"
 
-#define ROUNDS 1000000
+static int errors = 0;
 
-void dump() {
-	struct timeval t;
-	if (approxidate("10/Mar/2013:00:00:02.345 -0500", &t) != 0) {
-		printf("ERROR\n");
-		exit(1);
-	}
-	
-	printf("USEC: %ld\n", t.tv_usec);
-	
-	char buff[200];
-	snprintf(buff, 200, "%ld", t.tv_sec);
-	
-	struct tm m;
-	strptime(buff, "%s", &m);
-	
-	strftime(buff, sizeof(buff), "%a, %d %b %y %T %z", &m);
-	printf("%s\n", buff);
-	
-	exit(0);
+#define assert_equal(a, b) if (a != b) { \
+	fprintf(stderr, "Error: %ld != %ld\n", (long)a, (long)b); \
+	errors++; \
 }
 
 int main() {
-	// dump();
-	
-	long usec;
-	struct timeval start, end;
-	gettimeofday(&start, NULL);
-	
-	for (int i = 0; i < ROUNDS; i++) {
-		struct timeval t;
-		approxidate("10/Mar/2013:00:00:02.003 -0500", &t);
+	struct timeval tv;
+	approxidate("10/Mar/2013:00:00:02.003", &tv);
+	assert_equal(tv.tv_sec, 1362891602);
+	assert_equal(tv.tv_usec, 3000);
+
+	approxidate("10/Mar/2013:00:00:02", &tv);
+	assert_equal(tv.tv_sec, 1362891602);
+	assert_equal(tv.tv_usec, 0);
+
+	approxidate("10/Mar/2013:00:00:07", &tv);
+	assert_equal(tv.tv_sec, 1362891607);
+	assert_equal(tv.tv_usec, 0);
+
+	approxidate("10/Mar/2012:00:00:07", &tv);
+	assert_equal(tv.tv_sec, 1331355607);
+	assert_equal(tv.tv_usec, 0);
+
+	approxidate("10/Mar/2012:00:00:07 +0500", &tv);
+	assert_equal(tv.tv_sec, 1331319607);
+	assert_equal(tv.tv_usec, 0);
+
+	approxidate("10/Mar/2012:00:00:07.657891 +0500", &tv);
+	assert_equal(tv.tv_sec, 1331319607);
+	assert_equal(tv.tv_usec, 657891);
+
+	approxidate("10/Mar/2012:00:00:07.657891 +1400", &tv);
+	assert_equal(tv.tv_sec, 1331287207);
+	assert_equal(tv.tv_usec, 657891);
+
+	approxidate("10/Mar/2012:00:00:07.657891 -110", &tv);
+	assert_equal(tv.tv_sec, 1331355607);
+	assert_equal(tv.tv_usec, 657891);
+
+	approxidate("00:00:07.657891", &tv);
+	assert_equal(tv.tv_usec, 657891);
+
+	approxidate("23:11:07.9876 +1400", &tv);
+	assert_equal(tv.tv_usec, 987600);
+
+	approxidate("23:11:07.9876", &tv);
+	assert_equal(tv.tv_usec, 987600);
+
+	if (errors > 0) {
+		fprintf(stderr, "%d tests failed\n", errors);
+		return 1;
+	} else {
+		fprintf(stderr, "All tests passed!\n");
 	}
-	
-	gettimeofday(&end, NULL);
-	usec = end.tv_usec - start.tv_usec;
-	
-	double approxidate_time = usec/((double)(1000*1000));
-	approxidate_time += end.tv_sec - start.tv_sec;
-	
-	gettimeofday(&start, NULL);
-	
-	for (int i = 0; i < ROUNDS; i++) {
-		struct tm m;
-		strptime("10/Mar/2013:00:00:02", "%d/%b/%Y:%T", &m);
-	}
-	
-	gettimeofday(&end, NULL);
-	usec = end.tv_usec - start.tv_usec;
-	
-	double strptime_time = usec/((double)(1000*1000));
-	strptime_time += end.tv_sec - start.tv_sec;
-	
-	printf("approxidate time: %lf\n", approxidate_time);
-	printf("strptime time: %lf\n", strptime_time);
+
 	return 0;
 }

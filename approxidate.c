@@ -293,7 +293,7 @@ static int match_multi_number(unsigned long num, char c, const char *date, char 
 	struct atm now_tm;
 	struct atm *refuse_future;
 	long num2, num3, num4;
-	
+
 	num2 = strtol(end+1, &end, 10);
 	num3 = -1;
 	num4 = 0;
@@ -308,6 +308,7 @@ static int match_multi_number(unsigned long num, char c, const char *date, char 
 			}
 		}
 	}
+
 
 	/* Time? Date? */
 	switch (c) {
@@ -465,7 +466,7 @@ static int match_digit(const char *date, struct atm *tm, int *offset, int *tm_gm
 
 	if (num > 0 && num < 13 && tm->tm_mon < 0)
 		tm->tm_mon = num-1;
-	
+
 	return n;
 }
 
@@ -580,19 +581,21 @@ int parse_date_basic(const char *date, struct timeval *tv, int *offset)
 
 		date += match;
 	}
-	
+
+	// mktime() is larger than struct atm, so it can clobber usec
+	tv->tv_usec = tm.tm_usec;
+
 	/* mktime uses local timezone */
 	tv->tv_sec = tm_to_time_t(&tm);
 	if (*offset == -1)
-		*offset = ((time_t)tv->tv_sec - mktime((struct tm*)&tm)) / 60;
+		*offset = (((time_t)tv->tv_sec) - mktime((struct tm*)&tm)) / 60;
 
 	if (tv->tv_sec == -1)
 		return -1;
 
 	if (!tm_gmt)
 		tv->tv_sec -= *offset * 60;
-	
-	tv->tv_usec = tm.tm_usec;
+
 	return 0; /* success */
 }
 
@@ -867,8 +870,7 @@ static void pending_number(struct atm *tm, int *num)
 	}
 }
 
-static int approxidate_str(const char *date,
-				     const struct timeval *tv)
+static int approxidate_str(const char *date, struct timeval *tv)
 {
 	int number = 0;
 	int touched = 0;
@@ -897,10 +899,15 @@ static int approxidate_str(const char *date,
 		if (isalpha(c))
 			date = approxidate_alpha(date-1, &tm, &now, &number, &touched);
 	}
+
 	pending_number(&tm, &number);
 	if (!touched)
 		return -1;
-	return update_tm(&tm, &now, 0);
+
+	tv->tv_usec = tm.tm_usec;
+	tv->tv_sec = update_tm(&tm, &now, 0);
+
+	return 0;
 }
 
 int approxidate(const char *date, struct timeval *tv)
@@ -912,7 +919,7 @@ int approxidate(const char *date, struct timeval *tv)
 	}
 
 	gettimeofday(tv, NULL);
-	if ((tv->tv_sec = approxidate_str(date, tv)) >= 0) {
+	if (!approxidate_str(date, tv)) {
 		return 0;
 	}
 
