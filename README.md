@@ -6,7 +6,7 @@ Taken from Linus' original code in `/git/date.c`, approxidate gives you a dead-s
 
 There's only one function: `int approxidate(const char *date, struct timeval *t)`.  It returns 0 when it parsed the date, -1 when it couldn't.
 
-When compiling, be sure to link in the math library (-lm), and you're good.
+When compiling, copy both approxidate.{c,h} to your project, link in the math library (-lm), and you're good.
 
 ```c
 #include <approxidate.h>
@@ -20,14 +20,18 @@ For more, see [test.c](test.c).
 
 ## Speed
 
-From test.c:
+From benchmark.c (for 1,000,000 iterations):
 
 ```bash
 $ make
 
 rm -f test
-gcc -g -Wall -O2 -std=gnu99 test.c approxidate.c -lm -o test
+gcc -g -Wall -O2 -std=gnu99 benchmark.c approxidate.c -lm -o benchmark
 
 approxidate time: 0.363872
 strptime time: 0.622350
 ```
+
+## Python
+
+Check out: https://pypi.python.org/pypi/approxidate
