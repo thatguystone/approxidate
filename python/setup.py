@@ -14,7 +14,6 @@ args = {
 	'license': 'GPL v2',
 	'description': 'a quick way to get a unix timestamp from a ton of arbitrary date formats',
 	'long_description': long_description,
-	'summary': 'A quick date parser',
 }
 
 if sys.argv[1] == 'cython':
