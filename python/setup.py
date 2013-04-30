@@ -7,7 +7,7 @@ with open('README') as f:
 
 args = {
 	'name': 'approxidate',
-	'version': '1.0.0',
+	'version': '1.0.1',
 	'url': 'https://github.com/thatguystone/approxidate',
 	'author': 'Andrew Stone',
 	'author_email': 'andrew@clovar.com',
