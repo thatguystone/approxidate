@@ -44,6 +44,34 @@ int main() {
 	assert_equal(tv.tv_sec, 1331355607);
 	assert_equal(tv.tv_usec, 657891);
 
+	approxidate("mar 10 2013 00:00:07", &tv);
+	assert_equal(tv.tv_sec, 1362891607);
+	assert_equal(tv.tv_usec, 0);
+
+	approxidate("mar 10 2013 04:00:07 -0500", &tv);
+	assert_equal(tv.tv_sec, 1362906007);
+	assert_equal(tv.tv_usec, 0);
+
+	approxidate("march 10 2013 04:00:07 -0500", &tv);
+	assert_equal(tv.tv_sec, 1362906007);
+	assert_equal(tv.tv_usec, 0);
+
+	approxidate("march 10 2013 04:00:07 -0500", &tv);
+	assert_equal(tv.tv_sec, 1362906007);
+	assert_equal(tv.tv_usec, 0);
+
+	approxidate("10 march 2013 04:00:07 -0500", &tv);
+	assert_equal(tv.tv_sec, 1362906007);
+	assert_equal(tv.tv_usec, 0);
+
+	approxidate("2013 10 march 04:00:07 -0500", &tv);
+	assert_equal(tv.tv_sec, 1362906007);
+	assert_equal(tv.tv_usec, 0);
+
+	approxidate("2013 march 10 04:00:07 -0500", &tv);
+	assert_equal(tv.tv_sec, 1362906007);
+	assert_equal(tv.tv_usec, 0);
+
 	gettimeofday(&tv, NULL);
 	long usec = tv.tv_usec;
 	approxidate("10/Mar/2012", &tv);
