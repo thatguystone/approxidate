@@ -9,6 +9,11 @@ static int errors = 0;
 	fprintf(stderr, "Error at line %d: %ld != %ld\n", __LINE__, (long)a, (long)b); \
 	errors++; }
 
+static time_t _start_of_day(time_t sec)
+{
+	return sec - (sec % 86400);
+}
+
 int main()
 {
 	long usec;
@@ -82,6 +87,9 @@ int main()
 
 	approxidate("23:11:07.9876", &tv);
 	assert_equal(tv.tv_usec, 987600);
+
+	approxidate("1/1/2014", &tv);
+	assert_equal(_start_of_day(tv.tv_sec), 1388534400);
 
 	gettimeofday(&tv, NULL);
 	usec = tv.tv_usec;
