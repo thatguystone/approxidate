@@ -1,5 +1,4 @@
 include approxidate.*
+include _approxidate.*
 exclude approxidate.so
-include pyapproxidate.*
-include capproxidate.*
 include setup.py

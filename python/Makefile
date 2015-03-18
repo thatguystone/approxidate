@@ -1,16 +1,20 @@
-all:
-	python setup.py cython build_ext --inplace
-
-dist: all
+dist: c
 	python setup.py sdist
 
-upload: clean all
+upload: c
 	python setup.py sdist upload
+
+c: _approxidate.c approxidate.h
+
+_approxidate.c: ../approxidate.c
+	cp $^ $@
+
+approxidate.h: ../approxidate.h
+	cp $^ $@
 
 clean:
 	rm -rf build/
 	rm -rf dist/
 	rm -f MANIFEST
-	rm -f pyapproxidate.c
-	rm -f approxidate.*
+	rm -f *.c *h
 	rm -f approxidate.so

@@ -1,5 +1,5 @@
-approxidate.*
-pyapproxidate.c
+*.c
+*.h
 build/
 dist/
 MANIFEST
