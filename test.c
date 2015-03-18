@@ -17,6 +17,9 @@ static time_t _start_of_day(time_t sec)
 int main()
 {
 	long usec;
+	time_t ts;
+	struct tm *tm;
+	char buff[128];
 	struct timeval tv;
 
 	approxidate("10/Mar/2013:00:00:02.003", &tv);
@@ -90,6 +93,19 @@ int main()
 
 	approxidate("1/1/2014", &tv);
 	assert_equal(_start_of_day(tv.tv_sec), 1388534400);
+
+	/*
+	 * Git doesn't allow dates more than 10 days in the future. Make sure
+	 * approxidate does.
+	 *   * if today is 3/15/2015
+	 *   * 8/15/2015 should parse as "Aug 15, 2015", not "Mar 8, 2015".
+	 */
+	ts = time(NULL);
+	ts += 86400 * 31 * 5;
+	tm = gmtime(&ts);
+	strftime(buff, sizeof(buff), "%m/%d/%Y", tm);
+	approxidate(buff, &tv);
+	assert_equal(_start_of_day(tv.tv_sec), _start_of_day(ts));
 
 	gettimeofday(&tv, NULL);
 	usec = tv.tv_usec;

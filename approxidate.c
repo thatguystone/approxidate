@@ -250,7 +250,6 @@ static int is_date(int year, int month, int day, struct atm *now_tm, time_t now,
 	if (month > 0 && month < 13 && day > 0 && day < 32) {
 		struct atm check = *tm;
 		struct atm *r = (now_tm ? &check : tm);
-		time_t specified;
 
 		r->tm_mon = month - 1;
 		r->tm_mday = day;
@@ -270,14 +269,7 @@ static int is_date(int year, int month, int day, struct atm *now_tm, time_t now,
 		if (!now_tm)
 			return 1;
 
-		specified = tm_to_time_t(r);
-
-		/* Be it commit time or author time, it does not make
-		 * sense to specify timestamp way into the future.  Make
-		 * sure it is not later than ten days from now...
-		 */
-		if ((specified != -1) && (now + 10*24*3600 < specified))
-			return 0;
+		tm_to_time_t(r);
 		tm->tm_mon = r->tm_mon;
 		tm->tm_mday = r->tm_mday;
 		if (year != -1)
@@ -290,8 +282,6 @@ static int is_date(int year, int month, int day, struct atm *now_tm, time_t now,
 static int match_multi_number(unsigned long num, char c, const char *date, char *end, struct atm *tm)
 {
 	time_t now;
-	struct atm now_tm;
-	struct atm *refuse_future;
 	long num2, num3, num4;
 
 	num2 = strtol(end+1, &end, 10);
@@ -328,16 +318,12 @@ static int match_multi_number(unsigned long num, char c, const char *date, char 
 	case '/':
 	case '.':
 		now = time(NULL);
-		refuse_future = NULL;
-		if (gmtime_r(&now, (struct tm*)&now_tm))
-			refuse_future = &now_tm;
-
 		if (num > 70) {
 			/* yyyy-mm-dd? */
-			if (is_date(num, num2, num3, refuse_future, now, tm))
+			if (is_date(num, num2, num3, NULL, now, tm))
 				break;
 			/* yyyy-dd-mm? */
-			if (is_date(num, num3, num2, refuse_future, now, tm))
+			if (is_date(num, num3, num2, NULL, now, tm))
 				break;
 		}
 		/* Our eastern European friends say dd.mm.yy[yy]
@@ -345,14 +331,14 @@ static int match_multi_number(unsigned long num, char c, const char *date, char 
 		 * mm/dd/yy[yy] form only when separator is not '.'
 		 */
 		if (c != '.' &&
-		    is_date(num3, num, num2, refuse_future, now, tm))
+		    is_date(num3, num, num2, NULL, now, tm))
 			break;
 		/* European dd.mm.yy[yy] or funny US dd/mm/yy[yy] */
-		if (is_date(num3, num2, num, refuse_future, now, tm))
+		if (is_date(num3, num2, num, NULL, now, tm))
 			break;
 		/* Funny European mm.dd.yy */
 		if (c == '.' &&
-		    is_date(num3, num, num2, refuse_future, now, tm))
+		    is_date(num3, num, num2, NULL, now, tm))
 			break;
 		return 0;
 	}
