@@ -1,17 +1,19 @@
-#include <stdio.h>
 #include <assert.h>
-
+#include <stdio.h>
+#include <time.h>
 #include "approxidate.h"
 
 static int errors = 0;
 
 #define assert_equal(a, b) if (a != b) { \
-	fprintf(stderr, "Error: %ld != %ld\n", (long)a, (long)b); \
-	errors++; \
-}
+	fprintf(stderr, "Error at line %d: %ld != %ld\n", __LINE__, (long)a, (long)b); \
+	errors++; }
 
-int main() {
+int main()
+{
+	long usec;
 	struct timeval tv;
+
 	approxidate("10/Mar/2013:00:00:02.003", &tv);
 	assert_equal(tv.tv_sec, 1362891602);
 	assert_equal(tv.tv_usec, 3000);
@@ -72,15 +74,6 @@ int main() {
 	assert_equal(tv.tv_sec, 1362906007);
 	assert_equal(tv.tv_usec, 0);
 
-	gettimeofday(&tv, NULL);
-	long usec = tv.tv_usec;
-	approxidate("10/Mar/2012", &tv);
-
-	if (!((usec - 10000) < tv.tv_usec && (usec + 10000) > tv.tv_usec)) {
-		fprintf(stderr, "Error: usec calculation for anonymous time is off\n"); \
-		errors++;
-	}
-
 	approxidate("00:00:07.657891", &tv);
 	assert_equal(tv.tv_usec, 657891);
 
@@ -89,6 +82,15 @@ int main() {
 
 	approxidate("23:11:07.9876", &tv);
 	assert_equal(tv.tv_usec, 987600);
+
+	gettimeofday(&tv, NULL);
+	usec = tv.tv_usec;
+	approxidate("10/Mar/2012", &tv);
+
+	if (!((usec - 10000) < tv.tv_usec && (usec + 10000) > tv.tv_usec)) {
+		fprintf(stderr, "Error: usec calculation for anonymous time is off\n"); \
+		errors++;
+	}
 
 	if (errors > 0) {
 		fprintf(stderr, "%d tests failed\n", errors);
