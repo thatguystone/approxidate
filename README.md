@@ -1,4 +1,4 @@
-# Approxidate
+# Approxidate [![Build Status](https://travis-ci.org/thatguystone/approxidate.svg?branch=master)](https://travis-ci.org/thatguystone/approxidate)
 
 Taken from Linus' original code in `/git/date.c`, approxidate gives you a dead-simple way to get a timestamp from tons of date formats.  Unlike git's original approxidate, this approxidate also returns microseconds.
 
