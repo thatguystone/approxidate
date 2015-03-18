@@ -50,8 +50,8 @@ int main()
 	assert_equal(tv.tv_sec, 1331287207);
 	assert_equal(tv.tv_usec, 657891);
 
-	approxidate("10/Mar/2012:00:00:07.657891 -110", &tv);
-	assert_equal(tv.tv_sec, 1331355607);
+	approxidate("10/Mar/2012:00:00:07.657891 -0110", &tv);
+	assert_equal(tv.tv_sec, 1331341807);
 	assert_equal(tv.tv_usec, 657891);
 
 	approxidate("mar 10 2013 00:00:07 UTC", &tv);
