@@ -1,14 +1,24 @@
+CFLAGS = \
+	-Wall \
+	-O2 \
+	-std=gnu99
+
+LDFLAGS = \
+	-lm
+
 all: benchmark
 
-libapproxidate.so:
-	gcc -Wall -O2 -std=gnu99 -shared -fPIC approxidate.c -o $@
+libapproxidate.so: approxidate.c approxidate.h
+	$(CC) -shared -fPIC $(CFLAGS) approxidate.c -o $@
 
-benchmark: clean benchmark.c approxidate.c approxidate.h
-	gcc -g -Wall -O2 -std=gnu99 benchmark.c approxidate.c -lm -o $@
+.PHONY: benchmark
+benchmark:
+	$(CC) $(CFLAGS) benchmark.c approxidate.c -o $@ $(LDFLAGS)
 	@./benchmark
 
-test: clean test.c approxidate.c approxidate.h
-	gcc -g -Wall -O2 -std=gnu99 test.c approxidate.c -lm -o $@
+.PHONY: test
+test:
+	$(CC) -g $(CFLAGS) test.c approxidate.c -o $@ $(LDFLAGS)
 	@./test
 
 clean:
