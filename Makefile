@@ -25,3 +25,4 @@ clean:
 	rm -f benchmark
 	rm -f libapproxidate.so
 	rm -f test
+	$(MAKE) -C python clean
