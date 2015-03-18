@@ -22,20 +22,20 @@ int main()
 	char buff[128];
 	struct timeval tv;
 
-	approxidate("10/Mar/2013:00:00:02.003", &tv);
-	assert_equal(tv.tv_sec, 1362891602);
+	approxidate("10/Mar/2013:00:00:02.003 UTC", &tv);
+	assert_equal(tv.tv_sec, 1362873602);
 	assert_equal(tv.tv_usec, 3000);
 
-	approxidate("10/Mar/2013:00:00:02", &tv);
-	assert_equal(tv.tv_sec, 1362891602);
+	approxidate("10/Mar/2013:00:00:02 UTC", &tv);
+	assert_equal(tv.tv_sec, 1362873602);
 	assert_equal(tv.tv_usec, 0);
 
-	approxidate("10/Mar/2013:00:00:07", &tv);
-	assert_equal(tv.tv_sec, 1362891607);
+	approxidate("10/Mar/2013:00:00:07 UTC", &tv);
+	assert_equal(tv.tv_sec, 1362873607);
 	assert_equal(tv.tv_usec, 0);
 
-	approxidate("10/Mar/2012:00:00:07", &tv);
-	assert_equal(tv.tv_sec, 1331355607);
+	approxidate("10/Mar/2012:00:00:07 UTC", &tv);
+	assert_equal(tv.tv_sec, 1331337607);
 	assert_equal(tv.tv_usec, 0);
 
 	approxidate("10/Mar/2012:00:00:07 +0500", &tv);
@@ -54,8 +54,8 @@ int main()
 	assert_equal(tv.tv_sec, 1331355607);
 	assert_equal(tv.tv_usec, 657891);
 
-	approxidate("mar 10 2013 00:00:07", &tv);
-	assert_equal(tv.tv_sec, 1362891607);
+	approxidate("mar 10 2013 00:00:07 UTC", &tv);
+	assert_equal(tv.tv_sec, 1362873607);
 	assert_equal(tv.tv_usec, 0);
 
 	approxidate("mar 10 2013 04:00:07 -0500", &tv);
@@ -92,6 +92,9 @@ int main()
 	assert_equal(tv.tv_usec, 987600);
 
 	approxidate("1/1/2014", &tv);
+	assert_equal(_start_of_day(tv.tv_sec), 1388534400);
+
+	approxidate("1/1/2014 UTC", &tv);
 	assert_equal(_start_of_day(tv.tv_sec), 1388534400);
 
 	/*

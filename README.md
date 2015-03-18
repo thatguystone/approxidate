@@ -16,6 +16,8 @@ approxidate("10/Mar/2013:12:43:02.603 -0500", &t);
 approxidate("10/Mar/2013:12:43:02 -0500", &t);
 ```
 
+> Note: If no timezone is given, the system's local timezone is used.
+
 For more, see [test.c](test.c).
 
 ## Speed
