@@ -276,7 +276,7 @@ static int is_date(int year, int month, int day, struct atm *now_tm, time_t now,
 		 * sense to specify timestamp way into the future.  Make
 		 * sure it is not later than ten days from now...
 		 */
-		if (now + 10*24*3600 < specified)
+		if ((specified != -1) && (now + 10*24*3600 < specified))
 			return 0;
 		tm->tm_mon = r->tm_mon;
 		tm->tm_mday = r->tm_mday;
@@ -363,7 +363,8 @@ static int match_multi_number(unsigned long num, char c, const char *date, char 
  * Have we filled in any part of the time/date yet?
  * We just do a binary 'and' to see if the sign bit
  * is set in all the values.
- */static inline int nodate(struct atm *tm)
+ */
+static inline int nodate(struct tm *tm)
 {
 	return (tm->tm_year &
 		tm->tm_mon &
@@ -389,7 +390,7 @@ static int match_digit(const char *date, struct atm *tm, int *offset, int *tm_gm
 	 * more than 8 digits. This is because we don't want to rule out
 	 * numbers like 20070606 as a YYYYMMDD date.
 	 */
-	if (num >= 100000000 && nodate(tm)) {
+	if (num >= 100000000 && nodate((struct tm*)tm)) {
 		time_t time = num;
 		if (gmtime_r(&time, (struct tm*)tm)) {
 			*tm_gmt = 1;
@@ -582,11 +583,19 @@ int parse_date_basic(const char *date, struct timeval *tv, int *offset)
 		date += match;
 	}
 
-	// mktime() is larger than struct atm, so it can clobber usec
 	tv->tv_usec = tm.tm_usec;
 
 	/* mktime uses local timezone */
 	tv->tv_sec = tm_to_time_t(&tm);
+	if (*offset == -1) {
+		time_t temp_time = mktime((struct tm*)&tm);
+		if (tv->tv_sec > temp_time) {
+			*offset = (tv->tv_sec - temp_time) / 60;
+		} else {
+			*offset = -(int)((temp_time - tv->tv_sec) / 60);
+		}
+	}
+
 	if (*offset == -1)
 		*offset = (((time_t)tv->tv_sec) - mktime((struct tm*)&tm)) / 60;
 
@@ -729,7 +738,7 @@ static const char *approxidate_alpha(const char *date, struct atm *tm, struct at
 	const char *end = date;
 	int i;
 
-	while (isalpha(*++end));
+	while (isalpha(*++end))
 		;
 
 	for (i = 0; i < 12; i++) {
@@ -878,7 +887,7 @@ static int approxidate_str(const char *date, struct timeval *tv)
 	time_t time_sec;
 
 	time_sec = tv->tv_sec;
-	localtime_r(&time_sec, (struct tm*)	&tm);
+	localtime_r(&time_sec, (struct tm*)&tm);
 	now = tm;
 
 	tm.tm_year = -1;
