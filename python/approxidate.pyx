@@ -1,6 +1,9 @@
 cimport approxidate
 
-def approx(char *date):
+def approx(date):
+	if isinstance(date, unicode):
+		date = date.encode('UTF-8')
+
 	cdef timeval tv
 	if approxidate(date, &tv) == -1:
 		return -1.0

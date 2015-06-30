@@ -12,7 +12,7 @@ except:
 
 setup(
 	name='approxidate',
-	version='1.0.2',
+	version='1.0.3',
 	url='https://github.com/thatguystone/approxidate',
 	author='Andrew Stone',
 	author_email='andrew@clovar.com',
