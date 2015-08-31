@@ -269,7 +269,6 @@ static int is_date(int year, int month, int day, struct atm *now_tm, time_t now,
 		if (!now_tm)
 			return 1;
 
-		tm_to_time_t(r);
 		tm->tm_mon = r->tm_mon;
 		tm->tm_mday = r->tm_mday;
 		if (year != -1)
@@ -279,9 +278,9 @@ static int is_date(int year, int month, int day, struct atm *now_tm, time_t now,
 	return 0;
 }
 
-static int match_multi_number(unsigned long num, char c, const char *date, char *end, struct atm *tm)
+static int match_multi_number(unsigned long num, char c, const char *date,
+			      char *end, struct atm *tm, time_t now)
 {
-	time_t now;
 	long num2, num3, num4;
 
 	num2 = strtol(end+1, &end, 10);
@@ -317,7 +316,8 @@ static int match_multi_number(unsigned long num, char c, const char *date, char 
 	case '-':
 	case '/':
 	case '.':
-		now = time(NULL);
+		if (!now)
+			now = time(NULL);
 		if (num > 70) {
 			/* yyyy-mm-dd? */
 			if (is_date(num, num2, num3, NULL, now, tm))
@@ -393,7 +393,7 @@ static int match_digit(const char *date, struct atm *tm, int *offset, int *tm_gm
 	case '/':
 	case '-':
 		if (isdigit(end[1])) {
-			int match = match_multi_number(num, *end, date, end, tm);
+			int match = match_multi_number(num, *end, date, end, tm, 0);
 			if (match)
 				return match;
 		}
@@ -532,6 +532,7 @@ int parse_date_basic(const char *date, struct timeval *tv, int *offset)
 	if (!offset)
 		offset = &dummy_offset;
 
+	memset(&tm, 0, sizeof(tm));
 	tm.tm_year = -1;
 	tm.tm_mon = -1;
 	tm.tm_mday = -1;
@@ -815,7 +816,8 @@ static const char *approxidate_alpha(const char *date, struct atm *tm, struct at
 	return end;
 }
 
-static const char *approxidate_digit(const char *date, struct atm *tm, int *num)
+static const char *approxidate_digit(const char *date, struct atm *tm, int *num,
+				     time_t now)
 {
 	char *end;
 	unsigned long number = strtoul(date, &end, 10);
@@ -826,7 +828,8 @@ static const char *approxidate_digit(const char *date, struct atm *tm, int *num)
 	case '/':
 	case '-':
 		if (isdigit(end[1])) {
-			int match = match_multi_number(number, *end, date, end, tm);
+			int match = match_multi_number(number, *end, date, end,
+						       tm, now);
 			if (match)
 				return date + match;
 		}
@@ -888,7 +891,7 @@ static int approxidate_str(const char *date, struct timeval *tv)
 		date++;
 		if (isdigit(c)) {
 			pending_number(&tm, &number);
-			date = approxidate_digit(date-1, &tm, &number);
+			date = approxidate_digit(date-1, &tm, &number, time_sec);
 			touched = 1;
 			continue;
 		}
