@@ -1,28 +1,11 @@
-CFLAGS = \
-	-Wall \
-	-O2 \
-	-std=gnu99
+all: test
 
-LDFLAGS = \
-	-lm
+test: approxidate-test
+	./approxidate-test
 
-all: benchmark
-
-libapproxidate.so: approxidate.c approxidate.h
-	$(CC) -shared -fPIC $(CFLAGS) approxidate.c -o $@
-
-.PHONY: benchmark
-benchmark:
-	$(CC) $(CFLAGS) benchmark.c approxidate.c -o $@ $(LDFLAGS)
-	@./benchmark
-
-.PHONY: test
-test:
-	$(CC) -g $(CFLAGS) test.c approxidate.c -o $@ $(LDFLAGS)
-	@./test
+approxidate-test: *.c *.h
+	$(CC) -g -Wall -O2 -std=c11 $@.c approxidate.c -o $@ -lm
 
 clean:
-	rm -f benchmark
-	rm -f libapproxidate.so
-	rm -f test
+	rm -f approxidate-test
 	$(MAKE) -C python clean

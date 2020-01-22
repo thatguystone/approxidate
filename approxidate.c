@@ -4,6 +4,7 @@
  * Copyright (C) Linus Torvalds, 2005
  */
 
+#define _POSIX_C_SOURCE 200809L
 #include "approxidate.h"
 
 #include <math.h>
@@ -911,13 +912,25 @@ static int approxidate_str(const char *date, struct timeval *tv)
 
 int approxidate(const char *date, struct timeval *tv)
 {
-	int offset;
+	return approxidate_relative(date, tv, NULL);
+}
 
+int approxidate_relative(
+	const char *date,
+	struct timeval *tv,
+	const struct timeval *relative_to)
+{
+	int offset;
 	if (!parse_date_basic(date, tv, &offset)) {
 		return 0;
 	}
 
-	gettimeofday(tv, NULL);
+	if (relative_to == NULL) {
+		gettimeofday(tv, NULL);
+	} else {
+		*tv = *relative_to;
+	}
+
 	if (!approxidate_str(date, tv)) {
 		return 0;
 	}

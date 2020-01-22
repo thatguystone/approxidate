@@ -1,15 +1,26 @@
-#ifndef APPROXIDATE_H
-#define APPROXIDATE_H
-
+#pragma once
 #include <sys/time.h>
 
 /**
- * @param date The date string
- * @param tv Where the time will be placed.
+ * Get a unix timestamp from an arbitrary date string.
  *
- * @return 0 on success
- * @return 1 on error
+ * If the given date string is missing any parts (date, time, etc), those parts
+ * will be filled in from the current time.
+ *
+ * Returns -1 on parse failure, 0 on success.
  */
-int approxidate(const char *date, struct timeval *tv);
+int approxidate(const char* date, struct timeval* tv);
 
-#endif
+/**
+ * Get a unix timestamp from an arbitrary date string.
+ *
+ * Functions much like approxidate, except that if the given date string is
+ * missing any parts (date, time, etc), those parts will be filled in from the
+ * relative_to value; if relative_to is NULL, then now is used.
+ *
+ * Returns -1 on parse failure, 0 on success.
+ */
+int approxidate_relative(
+	const char*           date,
+	struct timeval*       tv,
+	const struct timeval* relative_to);
