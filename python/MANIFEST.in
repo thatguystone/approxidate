@@ -1,4 +1,0 @@
-include approxidate.*
-include _approxidate.*
-exclude approxidate.so
-include setup.py
