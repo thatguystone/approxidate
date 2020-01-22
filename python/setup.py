@@ -5,7 +5,7 @@ with open("README.rst") as f:
 
 setup(
     name="approxidate",
-    version="1.0.3",
+    version="1.0.4",
     url="https://github.com/thatguystone/approxidate",
     author="Andrew Stone",
     author_email="a@stne.dev",
