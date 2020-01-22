@@ -120,11 +120,8 @@ static bool approxidate_test()
 	tv_rel.tv_sec  = 1577910617; // 2020-01-01 12:30:17 -08:00
 	tv_rel.tv_usec = 0;
 
-	approxidate_relative("1/1/2014 UTC", &tv, &tv_rel);
+	approxidate_relative("1/1/2014", &tv, &tv_rel);
 	assert_equal(tv.tv_sec, 1388608217);
-
-	approxidate_relative("14:18:22", &tv, &tv_rel);
-	assert_equal(tv.tv_sec, 1577917102);
 
 	/*
 	 * Git doesn't allow dates more than 10 days in the future. Make sure
